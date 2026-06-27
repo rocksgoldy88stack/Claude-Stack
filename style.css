@@ -1,0 +1,372 @@
+/* ============================================================
+   SubTracker — Subscription Tracker PWA
+   Mobile-first, gradient theme, accessible & responsive
+   ============================================================ */
+
+/* ----- Design tokens ----- */
+:root {
+  --grad-start: #6a11cb;
+  --grad-end: #2575fc;
+  --bg: #0f1021;
+  --surface: #1b1c33;
+  --surface-2: #24264a;
+  --text: #f5f6ff;
+  --text-muted: #a6a9c8;
+  --danger: #ff4d6d;
+  --radius: 16px;
+  --shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  --transition: 0.2s ease;
+
+  /* Category colors */
+  --cat-Entertainment: #ff6b6b;
+  --cat-Work: #4dabf7;
+  --cat-Health: #51cf66;
+  --cat-Music: #cc5de8;
+  --cat-Education: #ffd43b;
+  --cat-Shopping: #ff922b;
+  --cat-Other: #868e96;
+}
+
+/* ----- Reset ----- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ----- App shell ----- */
+.app {
+  max-width: 560px;
+  margin: 0 auto;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ----- Header ----- */
+.header {
+  background: linear-gradient(135deg, var(--grad-start), var(--grad-end));
+  padding: 2rem 1.25rem 2.5rem;
+  border-radius: 0 0 28px 28px;
+  text-align: center;
+  box-shadow: var(--shadow);
+}
+
+.header__title {
+  font-size: 1.8rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+.header__subtitle {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.95rem;
+  margin-top: 0.25rem;
+}
+
+/* ----- Summary card ----- */
+.summary {
+  margin-top: 1.5rem;
+  background: rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius);
+  padding: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.summary__label {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.summary__amount {
+  font-size: 2.4rem;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.summary__count {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* ----- Main ----- */
+.main {
+  flex: 1;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.section-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 0.9rem;
+}
+
+.section-title--list {
+  margin-bottom: 0;
+}
+
+/* ----- Cards ----- */
+.card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  box-shadow: var(--shadow);
+}
+
+/* ----- Form ----- */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form__row {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.form__group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  flex: 1;
+}
+
+.form__group label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.form input,
+.form select {
+  width: 100%;
+  background: var(--surface-2);
+  border: 1px solid transparent;
+  border-radius: 12px;
+  padding: 0.8rem 0.9rem;
+  color: var(--text);
+  font-size: 1rem;
+  transition: border-color var(--transition), box-shadow var(--transition);
+  appearance: none;
+}
+
+.form input::placeholder {
+  color: #6f7390;
+}
+
+.form input:focus,
+.form select:focus {
+  outline: none;
+  border-color: var(--grad-end);
+  box-shadow: 0 0 0 3px rgba(37, 117, 252, 0.25);
+}
+
+/* Make native date/select controls readable on dark bg */
+.form input[type="date"] {
+  color-scheme: dark;
+}
+
+.form select {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23a6a9c8' stroke-width='3'><path d='M6 9l6 6 6-6'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 0.9rem center;
+  padding-right: 2.2rem;
+}
+
+.form__error {
+  color: var(--danger);
+  font-size: 0.85rem;
+  min-height: 1rem;
+}
+
+/* ----- Buttons ----- */
+.btn {
+  border: none;
+  border-radius: 12px;
+  padding: 0.9rem 1rem;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform var(--transition), opacity var(--transition);
+  color: #fff;
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+.btn--primary {
+  background: linear-gradient(135deg, var(--grad-start), var(--grad-end));
+  box-shadow: 0 6px 18px rgba(106, 17, 203, 0.45);
+}
+
+/* ----- Subscription list ----- */
+.sub-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  margin-top: 0.9rem;
+}
+
+.sub-item {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 1rem 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  box-shadow: var(--shadow);
+  border-left: 5px solid var(--cat-Other);
+  animation: pop 0.25s ease;
+}
+
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.sub-item__icon {
+  width: 46px;
+  height: 46px;
+  flex-shrink: 0;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: #fff;
+}
+
+.sub-item__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.sub-item__name {
+  font-weight: 700;
+  font-size: 1.05rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sub-item__meta {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 0.15rem;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.12rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.sub-item__right {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.4rem;
+}
+
+.sub-item__amount {
+  font-weight: 800;
+  font-size: 1.05rem;
+}
+
+.sub-item__cycle {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.btn-delete {
+  background: transparent;
+  border: none;
+  color: var(--danger);
+  font-size: 1.3rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0.2rem;
+  border-radius: 8px;
+  transition: background var(--transition);
+}
+
+.btn-delete:hover,
+.btn-delete:focus {
+  background: rgba(255, 77, 109, 0.15);
+  outline: none;
+}
+
+/* ----- Empty state ----- */
+.empty {
+  text-align: center;
+  color: var(--text-muted);
+  padding: 2.5rem 1rem;
+}
+
+.empty__icon {
+  font-size: 2.5rem;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.empty.hidden {
+  display: none;
+}
+
+/* ----- Footer ----- */
+.footer {
+  text-align: center;
+  padding: 1.25rem;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+/* ----- Larger screens ----- */
+@media (min-width: 480px) {
+  .header__title {
+    font-size: 2.1rem;
+  }
+}

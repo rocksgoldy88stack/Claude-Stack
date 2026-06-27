@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="description" content="A simple, beautiful Progressive Web App to track your subscriptions and monthly spending." />
+
+  <!-- PWA theming -->
+  <meta name="theme-color" content="#6a11cb" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="SubTracker" />
+
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="style.css" />
+
+  <title>SubTracker — Subscription Tracker</title>
+</head>
+<body>
+  <!-- ===== App Shell ===== -->
+  <div class="app">
+
+    <!-- Header + total spending summary -->
+    <header class="header">
+      <h1 class="header__title">💳 SubTracker</h1>
+      <p class="header__subtitle">Keep your subscriptions in check</p>
+
+      <div class="summary" aria-live="polite">
+        <span class="summary__label">Total Monthly Spending</span>
+        <span class="summary__amount" id="totalAmount">$0.00</span>
+        <span class="summary__count" id="subCount">0 active subscriptions</span>
+      </div>
+    </header>
+
+    <!-- Main content -->
+    <main class="main">
+
+      <!-- Add subscription form -->
+      <section class="card form-card" aria-label="Add a subscription">
+        <h2 class="section-title">Add Subscription</h2>
+        <form id="subForm" class="form" novalidate>
+          <div class="form__group">
+            <label for="name">Name</label>
+            <input type="text" id="name" name="name" placeholder="e.g. Netflix" maxlength="40" required />
+          </div>
+
+          <div class="form__row">
+            <div class="form__group">
+              <label for="amount">Amount ($)</label>
+              <input type="number" id="amount" name="amount" placeholder="9.99" min="0" step="0.01" required />
+            </div>
+
+            <div class="form__group">
+              <label for="cycle">Billing cycle</label>
+              <select id="cycle" name="cycle">
+                <option value="monthly">Monthly</option>
+                <option value="yearly">Yearly</option>
+                <option value="weekly">Weekly</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form__row">
+            <div class="form__group">
+              <label for="billingDate">Next billing date</label>
+              <input type="date" id="billingDate" name="billingDate" required />
+            </div>
+
+            <div class="form__group">
+              <label for="category">Category</label>
+              <select id="category" name="category">
+                <option value="Entertainment">Entertainment</option>
+                <option value="Work">Work</option>
+                <option value="Health">Health</option>
+                <option value="Music">Music</option>
+                <option value="Education">Education</option>
+                <option value="Shopping">Shopping</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn--primary">+ Add Subscription</button>
+          <p class="form__error" id="formError" role="alert"></p>
+        </form>
+      </section>
+
+      <!-- Subscriptions list -->
+      <section aria-label="Your subscriptions">
+        <h2 class="section-title section-title--list">Your Subscriptions</h2>
+
+        <!-- Empty state -->
+        <div class="empty" id="emptyState">
+          <span class="empty__icon">📭</span>
+          <p>No subscriptions yet.<br />Add your first one above!</p>
+        </div>
+
+        <!-- Cards injected here by JS -->
+        <ul class="sub-list" id="subList"></ul>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>Works offline · Saved on this device</p>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
