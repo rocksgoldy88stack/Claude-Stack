@@ -1,0 +1,34 @@
+{
+  "articles": [
+    {
+      "slug": "what-is-fintech",
+      "title": "What \"Fintech\" Actually Means (And Why It's Eating Banking)",
+      "category": "Fintech",
+      "date": "2026-06-22",
+      "author": "Capital & Code",
+      "readingMinutes": 6,
+      "excerpt": "From payment apps to embedded lending, fintech is less a single industry than a way of rebuilding finance around software. Here's the clear version.",
+      "file": "articles/what-is-fintech.md"
+    },
+    {
+      "slug": "ai-in-finance-explained",
+      "title": "How AI Is Really Used in Finance Today",
+      "category": "AI",
+      "date": "2026-06-20",
+      "author": "Capital & Code",
+      "readingMinutes": 7,
+      "excerpt": "Forget the hype. Here are the concrete places machine learning already moves money: fraud detection, credit scoring, trading, and customer service.",
+      "file": "articles/ai-in-finance-explained.md"
+    },
+    {
+      "slug": "compound-interest-basics",
+      "title": "Compound Interest: The Most Important Idea in Finance",
+      "category": "Finance",
+      "date": "2026-06-18",
+      "author": "Capital & Code",
+      "readingMinutes": 5,
+      "excerpt": "If you understand one financial concept deeply, make it this one. We break down compounding with plain numbers and zero jargon.",
+      "file": "articles/compound-interest-basics.md"
+    }
+  ]
+}
