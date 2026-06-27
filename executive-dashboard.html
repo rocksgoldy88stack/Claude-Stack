@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CSA Monthly Reminder — Executive Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  :root{
+    --bg:#0b1220; --panel:#121b2e; --panel2:#16223a; --ink:#e8eefc; --muted:#93a3c4;
+    --line:#243352; --brand:#3b82f6; --crit:#ef4444; --key:#f59e0b; --nonkey:#22c55e;
+    --accent:#8b5cf6; --teal:#14b8a6; --amber:#f59e0b; --red:#ef4444; --green:#22c55e;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:linear-gradient(180deg,#0b1220,#0d1526);color:var(--ink);}
+  header{padding:28px 32px 18px;border-bottom:1px solid var(--line);background:rgba(18,27,46,.6);position:sticky;top:0;z-index:10;backdrop-filter:blur(8px)}
+  .eyebrow{letter-spacing:.18em;text-transform:uppercase;color:var(--muted);font-size:12px;font-weight:600}
+  h1{margin:6px 0 4px;font-size:26px}
+  .sub{color:var(--muted);font-size:14px}
+  .meta{display:flex;gap:22px;flex-wrap:wrap;margin-top:12px;font-size:12.5px;color:var(--muted)}
+  .meta b{color:var(--ink)}
+  main{padding:24px 32px 60px;max-width:1320px;margin:0 auto}
+  section{margin-top:30px}
+  .grid{display:grid;gap:16px}
+  .kpis{grid-template-columns:repeat(6,1fr)}
+  .charts{grid-template-columns:repeat(3,1fr)}
+  .charts.two{grid-template-columns:repeat(2,1fr)}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px}
+  .kpi .label{color:var(--muted);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+  .kpi .val{font-size:30px;font-weight:700;margin-top:6px}
+  .kpi .hint{font-size:11.5px;color:var(--muted);margin-top:4px}
+  .kpi.alert{border-color:#5b2330;background:linear-gradient(180deg,#1b1320,#241019)}
+  .kpi.alert .val{color:#ff6b6b}
+  .kpi.warn{border-color:#5c4a1f}
+  .kpi.warn .val{color:var(--amber)}
+  .card h3{margin:0 0 4px;font-size:15px}
+  .card .csub{color:var(--muted);font-size:12px;margin-bottom:10px}
+  .chart-wrap{position:relative;height:240px}
+  h2.sec{font-size:18px;margin:0 0 14px;display:flex;align-items:center;gap:10px}
+  h2.sec::before{content:"";width:4px;height:20px;background:var(--brand);border-radius:3px}
+  .insights{grid-template-columns:repeat(2,1fr)}
+  .ins{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--brand);border-radius:10px;padding:16px}
+  .ins.red{border-left-color:var(--red)}
+  .ins.amber{border-left-color:var(--amber)}
+  .ins.green{border-left-color:var(--green)}
+  .ins .tag{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+  .ins h4{margin:6px 0 6px;font-size:15px}
+  .ins p{margin:0;color:#c5d2ee;font-size:13.5px;line-height:1.55}
+  .ins .rec{margin-top:10px;font-size:12.5px;color:var(--muted)}
+  .ins .rec b{color:var(--ink)}
+  table{width:100%;border-collapse:collapse;font-size:12.5px}
+  th,td{padding:9px 10px;text-align:left;border-bottom:1px solid var(--line)}
+  th{position:sticky;top:0;background:var(--panel2);color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.04em;cursor:pointer;user-select:none}
+  tbody tr:hover{background:#16223a}
+  .pill{display:inline-block;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:600}
+  .pill.crit{background:rgba(239,68,68,.16);color:#ff8585}
+  .pill.key{background:rgba(245,158,11,.16);color:#ffc056}
+  .pill.nonkey{background:rgba(34,197,94,.16);color:#65e29a}
+  .pill.no{background:rgba(239,68,68,.16);color:#ff8585}
+  .tablebar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+  input[type=search],select{background:var(--panel2);border:1px solid var(--line);color:var(--ink);padding:8px 12px;border-radius:8px;font-size:13px}
+  .scroll{max-height:520px;overflow:auto;border-radius:10px;border:1px solid var(--line)}
+  .legend-note{font-size:11.5px;color:var(--muted);margin-top:8px}
+  footer{color:var(--muted);font-size:12px;text-align:center;padding:24px;border-top:1px solid var(--line);margin-top:30px}
+  .no-dele{color:#ff8585;font-weight:600}
+  @media(max-width:1100px){.kpis{grid-template-columns:repeat(3,1fr)}.charts,.charts.two,.insights{grid-template-columns:1fr}}
+  @media print{body{background:#fff;color:#000}header{position:static}.card,.ins{break-inside:avoid}}
+</style>
+</head>
+<body>
+<header>
+  <div class="eyebrow">Control Self-Assessment · Monthly Compliance Review</div>
+  <h1>CSA Monthly Reminder — Executive Dashboard</h1>
+  <div class="sub">IT General Controls (ITGC) &amp; Access Governance · Archer GRC Search Report</div>
+  <div class="meta">
+    <span>Source: <b>CSA_Monthly_reminder_VK</b></span>
+    <span>Population: <b id="m-total">37</b> control assessments</span>
+    <span>Common due date: <b>19 Jun 2026</b></span>
+    <span>Report prepared: <b>27 Jun 2026</b></span>
+  </div>
+</header>
+
+<main>
+  <!-- KPI ROW -->
+  <section>
+    <div class="grid kpis" id="kpis"></div>
+  </section>
+
+  <!-- CHARTS -->
+  <section>
+    <h2 class="sec">Portfolio Composition</h2>
+    <div class="grid charts">
+      <div class="card"><h3>Risk / Control Scope</h3><div class="csub">Criticality of controls awaiting submission</div><div class="chart-wrap"><canvas id="cScope"></canvas></div></div>
+      <div class="card"><h3>Control Family</h3><div class="csub">Nature of the access control activity</div><div class="chart-wrap"><canvas id="cFamily"></canvas></div></div>
+      <div class="card"><h3>Review Cadence</h3><div class="csub">Inferred from performer remarks</div><div class="chart-wrap"><canvas id="cCadence"></canvas></div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="sec">Ownership &amp; Operational Risk</h2>
+    <div class="grid charts two">
+      <div class="card"><h3>Workload by Control Performer</h3><div class="csub">Number of controls owned by each performer</div><div class="chart-wrap" style="height:300px"><canvas id="cPerformer"></canvas></div></div>
+      <div class="card"><h3>Backup (Delegate) Coverage</h3><div class="csub">Controls with vs. without a named delegate</div><div class="chart-wrap" style="height:300px"><canvas id="cDelegate"></canvas></div>
+        <div class="legend-note">Controls without a delegate represent a key-person dependency / single point of failure.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- INSIGHTS -->
+  <section>
+    <h2 class="sec">Key Insights for the Executive Board</h2>
+    <div class="grid insights" id="insights"></div>
+  </section>
+
+  <!-- TABLE -->
+  <section>
+    <h2 class="sec">Detailed Control Register</h2>
+    <div class="tablebar">
+      <input type="search" id="q" placeholder="Search control, performer, system…" />
+      <select id="fScope"><option value="">All scopes</option><option>Critical</option><option>Key</option><option>Non-Key</option></select>
+      <select id="fDele"><option value="">Delegate: all</option><option value="yes">Has delegate</option><option value="no">No delegate</option></select>
+      <span class="csub" id="tcount" style="margin-left:auto"></span>
+    </div>
+    <div class="scroll">
+      <table id="tbl">
+        <thead><tr>
+          <th data-k="id">Assess. ID</th><th data-k="proc">Control Procedure</th><th data-k="name">Control Name</th>
+          <th data-k="scope">Scope</th><th data-k="performer">Performer</th><th data-k="delegate">Delegate</th>
+          <th data-k="entity">Entity</th><th data-k="csa">CSA Submitted</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer>
+    Generated from the Archer GRC "CSA Monthly Reminder" export · All 37 controls show <b>CSA Submission Status = "No"</b> against a due date of 19 Jun 2026.
+    Figures derived directly from the source file. Prepared for executive review.
+  </footer>
+</main>
+
+<script>
+const DATA = [{"id": "40917810", "proc": "GEN.ITG.ACC.001.GRC.Getpaid", "name": "Leaver access rights are reviewed and removed - Getpaid", "status": "Final Closed", "performer": "Mishra, Pragyan Lakshmi PMI162", "delegate": "Guha Thakurta, Oindrila OGU031", "due": "6/19/2026", "csa": "No", "scope": "Critical", "entity": "", "tracking": "37813200", "bp": "Access Governance", "sub": "ITGC", "remarks": "Relaunch-Monthly"}, {"id": "40917817", "proc": "GEN.ITG.ACC.001.GRC.L2C", "name": "Leaver access rights are reviewed and removed - L2C", "status": "Final Closed", "performer": "Coulibaly, Alima ABA191", "delegate": "Kramo, Aya AKR171", "due": "6/19/2026", "csa": "No", "scope": "Non-Key", "entity": "", "tracking": "38000351", "bp": "Access Governance", "sub": "ITGC", "remarks": ""}, {"id": "40917830", "proc": "GEN.ITG.ACC.001.GRC.ORIAN", "name": "Leaver access rights are reviewed and removed - ORIAN [EAC ID: A2409, SSO not enabled, Out of PAM scope]", "status": "Final Closed", "performer": "Lay Joe, Marc Morales MML027", "delegate": "", "due": "6/19/2026", "csa": "No", "scope": "Non-Key", "entity": "", "tracking": "38000360", "bp": "Access Governance", "sub": "ITGC", "remarks": "Monthly"}, {"id": "40917875", "proc": "GEN.ITG.ACC.002.GRC.Getpaid", "name": "Mover access rights are reviewed and removed - Getpaid", "status": "Final Closed", "performer": "Mishra, Pragyan Lakshmi PMI162", "delegate": "Guha Thakurta, Oindrila OGU031", "due": "6/19/2026", "csa": "No", "scope": "Critical", "entity": "", "tracking": "37813307", "bp": "Access Governance", "sub": "ITGC", "remarks": "Relaunch-Monthly"}, {"id": "40917881", "proc": "GEN.ITG.ACC.002.GRC.L2C", "name": "Mover access rights are reviewed and removed - L2C", "status": "Final Closed", "performer": "Coulibaly, Alima ABA191", "delegate": "Kramo, Aya AKR171", "due": "6/19/2026", "csa": "No", "scope": "Non-Key", "entity": "", "tracking": "38000352", "bp": "Access Governance", "sub": "ITGC", "remarks": ""}, {"id": "40917891", "proc": "GEN.ITG.ACC.002.GRC.ORIAN", "name": "Mover access rights are reviewed and removed - ORIAN [EAC ID: A2409, SSO not enabled, Out of PAM scope]", "status": "Final Closed", "performer": "Lay Joe, Marc Morales MML027", "delegate": "", "due": "6/19/2026", "csa": "No", "scope": "Non-Key", "entity": "", "tracking": "38000361", "bp": "Access Governance", "sub": "ITGC", "remarks": "Monthly"}, {"id": "40917913", "proc": "GEN.ITG.ACC.002.GRC.SSIB", "name": "Mover access rights are reviewed and removed - SSIB [EAC ID: A0115, SSO enabled, IGA onboarded]", "status": "Final Closed", "performer": "Swarna, Supritha SSW079", "delegate": "", "due": "6/19/2026", "csa": "No", "scope": "Critical", "entity": "", "tracking": "40878995", "bp": "Access Governance", "sub": "ITGC", "remarks": "Ask richard,Annually-To be Relaunched"}, {"id": "40917923", "proc": "GEN.ITG.ACC.003.GRC.SSIB", "name": "Super/ Admin user access is reviewed as applicable - SSIB [EAC ID: A0115, SSO enabled, IGA onboarded]", "status": "Final Closed", "performer": "Swarna, Supritha SSW079", "delegate": "", "due": "6/19/2026", "csa": "No", "scope": "Critical", "entity": "", "tracking": "40878996", "bp": "Access Governance", "sub": "ITGC", "remarks": "Ask richard,Annually-To be Relaunched"}, {"id": "40917946", "proc": "GEN.ITG.ACC.004.GRC.Getpaid", "name": "Transactions made through privileged user access are reviewed and validated - Getpaid", "status": "Final Closed", "performer": "Mishra, Pragyan Lakshmi PMI162", "delegate": "Guha Thakurta, Oindrila OGU031", "due": "6/19/2026", "csa": "No", "scope": "Critical", "entity": "", "tracking": "37815141", "bp": "Access Governance", "sub": "ITGC", "remarks": "Relaunch-Monthly"}, {"id": "40917950", "proc": "GEN.ITG.ACC.004.GRC.L2C", "name": "Transactions made through privileged user access are reviewed and validated - L2C", "status": "Final Closed", "performer": "Abasso, Franck FAB056", "delegate": "Assamangoa, Jose Richard JAS277", "due": "6/19/2026", "csa": "No", "scope": "Non-Key", "entity": "", "tracking": "38000355", "bp": "Access Governance", "sub": "ITGC", "remarks": ""}, {"id": "40917962", "proc": "GEN.ITG.ACC.004.GRC.ORIAN", "name": "Transactions made through Admin/Super user access are reviewed and validated - ORIAN [EAC ID: A2409, SSO not enabled, Out of PAM scope]", "status": "Final Closed", "performer": "Lay Joe, Marc Morales MML027", "delegate": "", "due": "6/19/2026", "csa": "No", "scope": "Non-Key", "entity": "", "tracking": "38000363", "bp": "Access Governance", "sub": "ITGC", "remarks": "Monthly"}, {"id": "40917977", "proc": "GEN.ITG.ACC.004.GRC.SSIB", "name": "Transactions made through Super/ Admin user access are reviewed and validated - SSIB [EAC ID: A0115, SSO enabled, IGA onboarded]", "status": "Final Closed", "performer": "Swarna, Supritha SSW079", "delegate": "", "due": "6/19/2026", "csa": "No", "scope": "Critical", "entity": "", "tracking": "40878998", "bp": "Access Governance", "sub": "ITGC", "remarks": "Ask richard,Annually-To be Relaunched"}, {"id": "40918015", "proc": "GEN.ITGC.2.11.NFTP OTC CCC", "name": "Actions performed by firefighter users are reviewed, to ensure that only authorized transactions are posted.", "status": "Final Closed", "performer": "Mishra, Pragyan Lakshmi PMI162", "delegate": "Guha Thakurta, Oindrila OGU031", "due": "6/19/2026", "csa": "No", "scope": "Critical", "entity": "", "tracking": "31670768", "bp": "Access Governance", "sub": "Segregation of duties", "remarks": "Relaunch-Monthly"}, {"id": "40918035", "proc": "GEN.ITGC.2.11.SAEC OTC CCC", "name": "Actions performed by firefighter users are reviewed, to ensure that only authorized transactions are posted.", "status": "Final Closed", "performer": "Mishra, Pragyan Lakshmi PMI162", "delegate": "Guha Thakurta, Oindrila OGU031", "due": "6/19/2026", "csa": "No", "scope": "Critical", "entity": "", "tracking": "12038388", "bp": "Access Governance", "sub": "ITGC", "remarks": "Relaunch-Monthly"}, {"id": "40918078", "proc": "GEN.ITGC.2.11.TMS SD Build", "name": "Actions performed by firefighter users are reviewed, to ensure that only authorized transactions are posted.", "status": "Final Closed", "performer": "Vakani, Maheenath MVA176", "delegate": "Semenov, Sergey SSE288", "due": "6/19/2026", "csa": "No", "scope": "Critical", "entity": "", "tracking": "40700497", "bp": "Access Governance", "sub": "Access & Segregation of duties", "remarks": "Monthly"}, {"id": "40918176", "proc": "GEN.ITGC.2.3.SSIB", "name": "Access rights to SSIB are periodically reviewed for appropriateness to ensure that user roles and permissions remain aligned with current job responsibilities [EAC ID: A0115, SSO enabled, IGA onboarded]", "status": "Final Closed", "performer": "Swarna, Supritha SSW079", "delegate": "", "due": "6/19/2026", "csa": "No", "scope": "Critical", "entity": "", "tracking": "40878999", "bp": "Access Governance", "sub": "ITGC", "remarks": "Ask richard,Annually-To be Relaunched"}, {"id": "40919811", "proc": "G21D", "name": "Fire Fighter access log review- SAP FACT - OTC Support", "status": "Final Closed", "performer": "Mishra, Pragyan Lakshmi PMI162", "delegate": "Guha Thakurta, Oindrila OGU031", "due": "6/19/2026", "csa": "No", "scope": "Key", "entity": "", "tracking": "38282272", "bp": "Access Governance", "sub": "ITGC", "remarks": "Relaunch-Monthly"}, {"id": "40919818", "proc": "GEN.ITG.ACC.001.GRC", "name": "Leaver access rights are reviewed and removed", "status": "Final Closed", "performer": "Kruse, Philipp PKR126", "delegate": "", "due": "6/19/2026", "csa": "No", "scope": "Non-Key", "entity": "DE057E", "tracking": "37889855", "bp": "Access Governance", "sub": "ITGC", "remarks": ""}, {"id": "40919825", "proc": "GEN.ITG.ACC.001.GRC", "name": "Leaver access rights are reviewed and removed", "status": "Final Closed", "performer": "Hemmens, Paul PHE117", "delegate": "Kedde, Michel MKE096", "due": "6/19/2026", "csa": "No", "scope": "Non-Key", "entity": "NL153E", "tracking": "37889858", "bp": "Access Governance", "sub": "ITGC", "remarks": ""}, {"id": "40919969", "proc": "GEN.ITG.ACC.002.GRC", "name": "Mover access rights are reviewed and removed", "status": "Final Closed", "performer": "Kruse, Philipp PKR126", "delegate": "", "due": "6/19/2026", "csa": "No", "scope": "Non-Key", "entity": "DE057E", "tracking": "37891215", "bp": "Access Governance", "sub": "ITGC", "remarks": ""}, {"id": "40919977", "proc": "GEN.ITG.ACC.002.GRC", "name": "Mover access rights are reviewed and removed", "status": "Final Closed", "performer": "Hemmens, Paul PHE117", "delegate": "Kedde, Michel MKE096", "due": "6/19/2026", "csa": "No", "scope": "Non-Key", "entity": "NL153E", "tracking": "37891224", "bp": "Access Governance", "sub": "ITGC", "remarks": ""}, {"id": "40920090", "proc": "GEN.ITG.ACC.002.GRC.VFI", "name": "Mover access rights are reviewed and removed - VFI (EAC A3377, SSO not enabled, IGA not onboarded)", "status": "Final Closed", "performer": "Jentoftsen, Ingar IJE003", "delegate": "", "due": "6/19/2026", "csa": "No", "scope": "Critical", "entity": "", "tracking": "40879808", "bp": "Access Governance", "sub": "ITGC", "remarks": "Annually - Mail to be sent"}, {"id": "40920104", "proc": "GEN.ITG.ACC.003.GRC.VFI", "name": "Admin/ Super user access is reviewed as applicable - VFI (EAC A3377, SSO not enabled, IGA not onboarded)", "status": "Final Closed", "performer": "Jentoftsen, Ingar IJE003", "delegate": "", "due": "6/19/2026", "csa": "No", "scope": "Critical", "entity": "", "tracking": "37815084", "bp": "Access Governance", "sub": "ITGC", "remarks": "Annually - Mail to be sent"}, {"id": "40920105", "proc": "GEN.ITG.ACC.004.GRC", "name": "Transactions made through privileged user access are reviewed and validated", "status": "Final Closed", "performer": "Kruse, Philipp PKR126", "delegate": "", "due": "6/19/2026", "csa": "No", "scope": "Non-Key", "entity": "DE057E", "tracking": "37894490", "bp": "Access Governance", "sub": "ITGC", "remarks": ""}, {"id": "40920205", "proc": "GEN.ITGC.2.2.B2C.PLM", "name": "Access requests for Paloma system is approved by authorised person", "status": "Final Closed", "performer": "Hemmens, Paul PHE117", "delegate": "Kedde, Michel MKE096", "due": "6/19/2026", "csa": "No", "scope": "Non-Key", "entity": "NL153E", "tracking": "35149155", "bp": "Access Governance", "sub": "ITGC", "remarks": ""}, {"id": "40920213", "proc": "GEN.ITGC.2.2.KGH.IDC", "name": "Access requests for IDC Navitro system is approved by authorised person", "status": "Final Closed", "performer": "Jensen, Kasper KJE088", "delegate": "", "due": "6/19/2026", "csa": "No", "scope": "Non-Key", "entity": "NO088L", "tracking": "36461997", "bp": "Access Governance", "sub": "ITGC", "remarks": ""}, {"id": "40920218", "proc": "GEN.ITGC.2.2.VFI", "name": "Access requests for critical system is approved by authorised person - VFI (EAC A3377, SSO not enabled, IGA not onboarded)", "status": "Final Closed", "performer": "Jentoftsen, Ingar IJE003", "delegate": "", "due": "6/19/2026", "csa": "No", "scope": "Critical", "entity": "", "tracking": "40879811", "bp": "Access Governance", "sub": "ITGC", "remarks": "Annually - Mail to be sent"}, {"id": "40920229", "proc": "GEN.ITGC.2.2.VSC.MOT", "name": "Access requests for MOTUS system is approved by authorised person", "status": "Final Closed", "performer": "Dye, Davis DDY017", "delegate": "", "due": "6/19/2026", "csa": "No", "scope": "Critical", "entity": "US006U", "tracking": "35146550", "bp": "Access Governance", "sub": "ITGC", "remarks": "Quarterly-To be Relaunched"}, {"id": "40920235", "proc": "GEN.ITGC.2.3.GCD", "name": "Access rights to GCD are periodically reviewed for appropriateness to ensure that user roles and permissions remain aligned with current job responsibilities [EAC ID: A2782, SSO enabled, IGA Saviynt onboarded]", "status": "Final Closed", "performer": "Koppa, Monish MKO323", "delegate": "", "due": "6/19/2026", "csa": "No", "scope": "Critical", "entity": "", "tracking": "40857976", "bp": "Access Governance", "sub": "ITGC", "remarks": "Annually - Mail to be sent"}, {"id": "40920255", "proc": "GEN.ITGC.2.4.B2C.PLM", "name": "Admin access to Paloma system is approved by authorised person", "status": "Final Closed", "performer": "Hemmens, Paul PHE117", "delegate": "Kedde, Michel MKE096", "due": "6/19/2026", "csa": "No", "scope": "Non-Key", "entity": "NL153E", "tracking": "35149160", "bp": "Access Governance", "sub": "ITGC", "remarks": ""}, {"id": "40920260", "proc": "GEN.ITGC.2.4.KGH.IDC", "name": "Admin access to IDC Navitro system is approved by authorised person", "status": "Final Closed", "performer": "Jensen, Kasper KJE088", "delegate": "", "due": "6/19/2026", "csa": "No", "scope": "Non-Key", "entity": "NO088L", "tracking": "36462002", "bp": "Access Governance", "sub": "ITGC", "remarks": ""}, {"id": "40920266", "proc": "GEN.ITGC.2.4.VFI", "name": "Admin access to critical system is approved by authorised person - VFI (EAC A3377, SSO not enabled, IGA not onboarded)", "status": "Final Closed", "performer": "Jentoftsen, Ingar IJE003", "delegate": "", "due": "6/19/2026", "csa": "No", "scope": "Critical", "entity": "", "tracking": "40879809", "bp": "Access Governance", "sub": "ITGC", "remarks": "Annually - Mail to be sent"}, {"id": "40920275", "proc": "GEN.ITGC.2.4.VSC.MOT", "name": "Admin access to MOTUS system is approved by authorised person", "status": "Final Closed", "performer": "Dye, Davis DDY017", "delegate": "", "due": "6/19/2026", "csa": "No", "scope": "Critical", "entity": "US006U", "tracking": "35146558", "bp": "Access Governance", "sub": "ITGC", "remarks": "Quarterly-To be Relaunched"}, {"id": "40921724", "proc": "ITG02", "name": "Review and approve creation and change in access rights of operational users", "status": "Final Closed", "performer": "Kruse, Philipp PKR126", "delegate": "Hagenbeck, Jens JHA409", "due": "6/19/2026", "csa": "No", "scope": "Non-Key", "entity": "DE057E", "tracking": "8277522", "bp": "Access Governance", "sub": "ITGC", "remarks": ""}, {"id": "40921829", "proc": "ITG02", "name": "Approval of operational access to key systems", "status": "Final Closed", "performer": "N'zian, Adoublah Marie Jeanne MJN029", "delegate": "", "due": "6/19/2026", "csa": "No", "scope": "Key", "entity": "CI010L", "tracking": "36530921", "bp": "Information Technology", "sub": "ITGC", "remarks": "Monthly"}, {"id": "40921831", "proc": "ITG02", "name": "Approval of operational access to key systems", "status": "Final Closed", "performer": "N'zian, Adoublah Marie Jeanne MJN029", "delegate": "", "due": "6/19/2026", "csa": "No", "scope": "Key", "entity": "CI017L", "tracking": "36531047", "bp": "Information Technology", "sub": "ITGC", "remarks": "Monthly"}, {"id": "40921833", "proc": "ITG02", "name": "Approval of operational access to key systems", "status": "Final Closed", "performer": "N'zian, Adoublah Marie Jeanne MJN029", "delegate": "", "due": "6/19/2026", "csa": "No", "scope": "Key", "entity": "CI016L", "tracking": "36531162", "bp": "Information Technology", "sub": "ITGC", "remarks": "Monthly"}];
+
+const SCOPE_COLORS = {Critical:'#ef4444', Key:'#f59e0b', 'Non-Key':'#22c55e'};
+const palette = ['#3b82f6','#8b5cf6','#14b8a6','#f59e0b','#ef4444','#22c55e','#e879f9','#38bdf8','#fb7185','#a3e635','#fbbf24','#60a5fa','#34d399'];
+
+// ---------- derive dimensions ----------
+function family(n){n=(n||'').toLowerCase();
+  if(n.includes('leaver'))return 'Leaver Access Review';
+  if(n.includes('mover'))return 'Mover Access Review';
+  if(n.includes('firefighter')||n.includes('privileged')||n.includes('super')||n.includes('admin'))return 'Privileged / Admin Access';
+  if(n.includes('access request')||n.includes('creation and change')||n.includes('operational access'))return 'Access Provisioning / Approval';
+  if(n.includes('periodically reviewed')||n.includes('access rights to'))return 'Periodic Recertification';
+  return 'Other';}
+function cadence(r){r=(r||'').toLowerCase();
+  if(r.includes('monthly'))return 'Monthly';
+  if(r.includes('quarterly'))return 'Quarterly';
+  if(r.includes('annual'))return 'Annually';
+  return 'Unspecified';}
+DATA.forEach(d=>{d.family=family(d.name);d.cadence=cadence(d.remarks);
+  d.hasDele=!!(d.delegate&&d.delegate.trim());
+  d.relaunch=/relaunch|to be|mail to be sent/i.test(d.remarks||'');});
+
+const count=(arr,f)=>arr.reduce((m,d)=>{const k=f(d)||'—';m[k]=(m[k]||0)+1;return m;},{});
+const total=DATA.length;
+const byScope=count(DATA,d=>d.scope);
+const critical=byScope['Critical']||0;
+const noDele=DATA.filter(d=>!d.hasDele).length;
+const critNoDele=DATA.filter(d=>d.scope==='Critical'&&!d.hasDele).length;
+const relaunch=DATA.filter(d=>d.relaunch).length;
+const performers=Object.keys(count(DATA,d=>d.performer)).length;
+const topPerf=Object.entries(count(DATA,d=>d.performer)).sort((a,b)=>b[1]-a[1])[0];
+
+// ---------- KPIs ----------
+const kpis=[
+  {label:'Controls Pending Submission',val:total,hint:'100% show CSA Status = "No"',cls:'alert'},
+  {label:'Past Due',val:'100%',hint:'Due 19 Jun 2026 (already elapsed)',cls:'alert'},
+  {label:'Critical-Scope Controls',val:critical,hint:Math.round(critical/total*100)+'% of the population',cls:'warn'},
+  {label:'No Backup Delegate',val:noDele,hint:Math.round(noDele/total*100)+'% lack a named delegate',cls:'warn'},
+  {label:'Flagged "To Be Relaunched"',val:relaunch,hint:'Process/setup backlog',cls:'warn'},
+  {label:'Distinct Control Performers',val:performers,hint:'Top owner holds '+topPerf[1]+' controls',cls:''},
+];
+document.getElementById('kpis').innerHTML=kpis.map(k=>
+  `<div class="card kpi ${k.cls}"><div class="label">${k.label}</div><div class="val">${k.val}</div><div class="hint">${k.hint}</div></div>`).join('');
+document.getElementById('m-total').textContent=total;
+
+// ---------- charts ----------
+Chart.defaults.color='#93a3c4';Chart.defaults.borderColor='#243352';Chart.defaults.font.size=12;
+
+new Chart(cScope,{type:'doughnut',data:{labels:Object.keys(byScope),
+  datasets:[{data:Object.values(byScope),backgroundColor:Object.keys(byScope).map(s=>SCOPE_COLORS[s]||'#64748b'),borderColor:'#0d1526',borderWidth:2}]},
+  options:{plugins:{legend:{position:'bottom'}},cutout:'58%'}});
+
+const fam=count(DATA,d=>d.family);
+new Chart(cFamily,{type:'bar',data:{labels:Object.keys(fam),
+  datasets:[{data:Object.values(fam),backgroundColor:'#3b82f6',borderRadius:6}]},
+  options:{indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{ticks:{precision:0},grid:{color:'#1c2942'}},y:{grid:{display:false}}}}});
+
+const cad=count(DATA,d=>d.cadence);
+new Chart(cCadence,{type:'doughnut',data:{labels:Object.keys(cad),
+  datasets:[{data:Object.values(cad),backgroundColor:palette,borderColor:'#0d1526',borderWidth:2}]},
+  options:{plugins:{legend:{position:'bottom'}},cutout:'58%'}});
+
+const perf=Object.entries(count(DATA,d=>d.performer)).sort((a,b)=>b[1]-a[1]);
+new Chart(cPerformer,{type:'bar',data:{labels:perf.map(p=>p[0].replace(/\s[A-Z]{2,3}\d+$/,'')),
+  datasets:[{data:perf.map(p=>p[1]),backgroundColor:perf.map((p,i)=>p[1]>=4?'#ef4444':'#3b82f6'),borderRadius:5}]},
+  options:{indexAxis:'y',plugins:{legend:{display:false},tooltip:{callbacks:{afterLabel:c=>c.raw>=4?'High concentration':''}}},
+  scales:{x:{ticks:{precision:0,stepSize:1},grid:{color:'#1c2942'}},y:{grid:{display:false}}}}});
+
+new Chart(cDelegate,{type:'doughnut',data:{labels:['Has delegate','No delegate (SPOF)'],
+  datasets:[{data:[total-noDele,noDele],backgroundColor:['#22c55e','#ef4444'],borderColor:'#0d1526',borderWidth:2}]},
+  options:{plugins:{legend:{position:'bottom'}},cutout:'58%'}});
+
+// ---------- insights ----------
+const insights=[
+  {cls:'red',tag:'Compliance · Critical',h:`All ${total} controls are overdue and unsubmitted`,
+   p:`Every assessment in the population carries <b>CSA Submission Status = "No"</b> against a uniform due date of <b>19 Jun 2026</b>, which has already passed. Although each control's overall workflow shows "Final Closed", the self-assessment attestation step is outstanding across the board — a 100% non-submission rate.`,
+   rec:`<b>Action:</b> Treat as the highest-priority item this cycle. Issue an immediate escalation to all ${performers} performers and confirm submission within 5 business days.`},
+  {cls:'amber',tag:'Risk Concentration',h:`${critical} of ${total} controls (${Math.round(critical/total*100)}%) are Critical scope`,
+   p:`Critical controls dominate the backlog, with Non-Key (${byScope['Non-Key']||0}) and Key (${byScope['Key']||0}) making up the remainder. Critical access controls (firefighter/privileged usage, leaver & mover reviews) directly mitigate fraud and SoD risk, so delayed attestation has an outsized control-environment impact.`,
+   rec:`<b>Action:</b> Sequence remediation Critical → Key → Non-Key. Require sign-off evidence for the ${critNoDele} Critical controls that also have no delegate.`},
+  {cls:'red',tag:'Key-Person Dependency',h:`${noDele} controls (${Math.round(noDele/total*100)}%) have no backup delegate`,
+   p:`More than half the population names only a single performer with no delegate, including <b>${critNoDele} Critical controls</b>. The heaviest single owner — <b>${topPerf[0].replace(/\s[A-Z]{2,3}\d+$/,'')}</b> — is responsible for <b>${topPerf[1]} controls</b>. This creates execution risk if any individual is absent.`,
+   rec:`<b>Action:</b> Assign named delegates to every Critical and Key control before the next cycle; rebalance the top owner's portfolio.`},
+  {cls:'amber',tag:'Process Hygiene',h:`${relaunch} controls are flagged "to be relaunched" / "mail to be sent"`,
+   p:`Performer remarks reveal a setup backlog: several controls are pending relaunch (e.g. "Relaunch-Monthly", "Annually-To be Relaunched", "Quarterly-To be Relaunched") and a few note open queries ("Ask richard"). This suggests the recurrence schedule in Archer is not fully configured, which will keep generating reminders.`,
+   rec:`<b>Action:</b> Have the GRC team finalise recurrence configuration and clear open queries so cadence is enforced automatically.`},
+  {cls:'green',tag:'Scope Focus',h:`Almost entirely Access Governance / ITGC`,
+   p:`${(count(DATA,d=>d.bp)['Access Governance']||0)} of ${total} controls sit under Access Governance and ${(count(DATA,d=>d.sub)['ITGC']||0)} are ITGC, spanning leaver/mover reviews, privileged & firefighter usage, and access provisioning approvals. The risk theme is tightly scoped to identity & access management.`,
+   rec:`<b>Action:</b> A single IAM control owner could coordinate the whole remediation; consider a focused IAM controls war-room.`},
+  {cls:'amber',tag:'Coverage · Multi-system',h:`Controls span multiple entities &amp; systems`,
+   p:`Named systems include Getpaid, L2C, ORIAN, SSIB, VFI, Paloma, IDC Navitro, MOTUS and SAP FACT, across entities such as DE057E, NL153E, NO088L, US006U and the CI* legal entities. ${total-DATA.filter(d=>d.entity).length} records carry no entity code, reducing traceability.`,
+   rec:`<b>Action:</b> Backfill missing entity codes to improve auditability and ensure each system has an accountable submitter.`},
+];
+document.getElementById('insights').innerHTML=insights.map(i=>
+  `<div class="ins ${i.cls}"><div class="tag">${i.tag}</div><h4>${i.h}</h4><p>${i.p}</p><div class="rec">${i.rec}</div></div>`).join('');
+
+// ---------- table ----------
+const tbody=document.querySelector('#tbl tbody');
+let sortK='scope',sortDir=1;
+const scopePill=s=>`<span class="pill ${s==='Critical'?'crit':s==='Key'?'key':'nonkey'}">${s}</span>`;
+function render(){
+  const q=document.getElementById('q').value.toLowerCase();
+  const fs=document.getElementById('fScope').value;
+  const fd=document.getElementById('fDele').value;
+  let rows=DATA.filter(d=>{
+    const hay=(d.id+' '+d.proc+' '+d.name+' '+d.performer+' '+d.entity).toLowerCase();
+    if(q&&!hay.includes(q))return false;
+    if(fs&&d.scope!==fs)return false;
+    if(fd==='yes'&&!d.hasDele)return false;
+    if(fd==='no'&&d.hasDele)return false;
+    return true;});
+  const order={Critical:0,Key:1,'Non-Key':2};
+  rows.sort((a,b)=>{let x=a[sortK],y=b[sortK];
+    if(sortK==='scope'){x=order[x];y=order[y];}
+    return (x>y?1:x<y?-1:0)*sortDir;});
+  tbody.innerHTML=rows.map(d=>`<tr>
+    <td>${d.id}</td><td>${d.proc}</td><td>${d.name.replace(/\s*\[.*?\]/,'').replace(/\s*\(.*?\)/,'')}</td>
+    <td>${scopePill(d.scope)}</td><td>${d.performer.replace(/\s[A-Z]{2,3}\d+$/,'')}</td>
+    <td>${d.hasDele?d.delegate.replace(/\s[A-Z]{2,3}\d+$/,''):'<span class="no-dele">— none —</span>'}</td>
+    <td>${d.entity||'—'}</td><td><span class="pill no">${d.csa}</span></td></tr>`).join('');
+  document.getElementById('tcount').textContent=rows.length+' of '+total+' controls shown';
+}
+document.querySelectorAll('#tbl th').forEach(th=>th.onclick=()=>{const k=th.dataset.k;
+  if(sortK===k)sortDir*=-1;else{sortK=k;sortDir=1;}render();});
+['q','fScope','fDele'].forEach(id=>document.getElementById(id).addEventListener('input',render));
+render();
+</script>
+</body>
+</html>
