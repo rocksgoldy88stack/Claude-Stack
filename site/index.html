@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- ===== SEO / Social meta ===== -->
+  <title>Capital &amp; Code — Finance, AI &amp; Fintech, explained clearly</title>
+  <meta name="description" content="Capital & Code publishes clear, practical articles on finance, artificial intelligence, and the fintech reshaping how money works." />
+
+  <!-- Open Graph: controls how the link looks when shared on social/chat -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Capital & Code — Finance, AI & Fintech, explained clearly" />
+  <meta property="og:description" content="Clear, no-jargon articles on markets, machine learning, and the technology reshaping money." />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <!-- ===== Fonts: a readable serif for reading, clean sans for UI ===== -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- ============ HEADER / NAV ============ -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="index.html">
+        <span class="brand-mark">C&amp;C</span>
+        <span class="brand-name">Capital &amp; Code</span>
+      </a>
+
+      <nav class="main-nav" aria-label="Primary">
+        <a href="index.html" class="nav-link is-active">Home</a>
+        <a href="index.html#finance" class="nav-link" data-category="Finance">Finance</a>
+        <a href="index.html#ai" class="nav-link" data-category="AI">AI</a>
+        <a href="index.html#fintech" class="nav-link" data-category="Fintech">Fintech</a>
+        <a href="about.html" class="nav-link">About</a>
+      </nav>
+
+      <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ============ HERO ============ -->
+  <section class="hero">
+    <div class="container">
+      <p class="hero-eyebrow">Finance · Artificial Intelligence · Fintech</p>
+      <h1 class="hero-title">Money is being rewritten by code.<br />We explain how.</h1>
+      <p class="hero-sub">
+        Clear, no-jargon articles on markets, machine learning, and the technology
+        reshaping how the world saves, spends, and invests.
+      </p>
+      <a href="#articles" class="btn btn-primary">Read the latest</a>
+    </div>
+  </section>
+
+  <!-- ============ ARTICLES (populated by JS in Step 2 & 3) ============ -->
+  <main id="articles" class="container section">
+    <div class="section-head">
+      <h2 class="section-title">Latest articles</h2>
+
+      <!-- Category filter buttons (wired up in Step 3) -->
+      <div class="filters" role="tablist" aria-label="Filter articles by category">
+        <button class="filter is-active" data-filter="all">All</button>
+        <button class="filter" data-filter="Finance">Finance</button>
+        <button class="filter" data-filter="AI">AI</button>
+        <button class="filter" data-filter="Fintech">Fintech</button>
+      </div>
+    </div>
+
+    <!-- Article cards get injected here -->
+    <div id="article-grid" class="article-grid">
+      <p class="loading">Loading articles…</p>
+    </div>
+  </main>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div>
+        <span class="brand-mark">C&amp;C</span>
+        <p class="footer-tagline">Capital &amp; Code — making finance &amp; tech make sense.</p>
+      </div>
+      <nav class="footer-nav" aria-label="Footer">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="../index.html">SubTracker app ↗</a>
+      </nav>
+      <p class="footer-copy">© <span id="year"></span> Capital &amp; Code. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- App logic comes in Step 2 -->
+  <script src="js/app.js" defer></script>
+</body>
+</html>
